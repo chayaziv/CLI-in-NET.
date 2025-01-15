@@ -177,7 +177,7 @@ bundleCommand.SetHandler((languages, output,note ,sort , removeEmptyLines , auth
     {
         Console.WriteLine(file);
     }
-    // מיון הקבצים
+    // sort files
     filteredFiles = sort == "type"
         ? filteredFiles.OrderBy(f => Path.GetExtension(f)).ThenBy(f => Path.GetFileName(f)).ToList() // מיון לפי סוג ואז לפי שם
         : filteredFiles.OrderBy(f => Path.GetFileName(f)).ToList(); // מיון לפי שם בלבד
@@ -242,7 +242,7 @@ var createRspCommand = new Command("create-rsp", "Create a response file for the
 
 createRspCommand.SetHandler(() =>
 {
-    // שאלות למשתמש
+    // inputs from user
     Console.WriteLine("Enter the programming languages (separated by spaces):");
     var languagesInput = Console.ReadLine();
     var languages = languagesInput?.Split(' ') ?? Array.Empty<string>();
@@ -264,7 +264,7 @@ createRspCommand.SetHandler(() =>
     Console.WriteLine("Enter the author name:");
     var author = Console.ReadLine();
 
-    // יצירת הפקודה המלאה
+    // generate command line
     var commandText = $" -l {string.Join(" ", languages)} "+
                       $" {(!string.IsNullOrEmpty(output) ? $"-o {output} " : "")}" +
                       $"{(note ? "-n " : "")}" +
@@ -272,7 +272,7 @@ createRspCommand.SetHandler(() =>
                       $"{(removeEmptyLines ? "-r " : "")}" +
                       $"{(!string.IsNullOrEmpty(author) ? $"-a \"{author}\" " : "")}";
 
-    // קבלת שם הקובץ לתגובה מתוך התיקיה הנוכחית
+   
     Console.WriteLine("Enter the response file name (only file name, no path):");
     var rspFileName = Console.ReadLine();
     string rspFilePath = Path.Combine(Directory.GetCurrentDirectory(), rspFileName);
