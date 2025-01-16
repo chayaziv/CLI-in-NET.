@@ -24,11 +24,11 @@ languageOption.AddValidator(result =>
     }
 
     // Validate languages against the allowed list
-    var validLanguages = ServiceLanguage.languagesWithExtensions.Select(l => l.language).ToList();
-    var invalidLanguages = values
-        .Where(lang => !lang.Equals("all", StringComparison.OrdinalIgnoreCase) &&
-                       !validLanguages.Contains(lang.ToLower()))
-        .ToList();
+    var validLanguages = ServiceLanguage.LanguagesConfig.Keys.ToList();
+    var invalidLanguages =
+    values.Where(lang => !lang.Equals("all", StringComparison.OrdinalIgnoreCase) &&
+                       !validLanguages.Contains(lang.ToLower())).ToList();
+
 
     if (invalidLanguages.Any())
     {
@@ -128,50 +128,23 @@ var bundleCommand = new Command("bundle", "Bundles files into a single output fi
     authorOption
 };
 
-bundleCommand.SetHandler((languages, output,note ,sort , removeEmptyLines , author) =>
+bundleCommand.SetHandler((languages, output, note, sort, removeEmptyLines, author) =>
 {
     var currentDir = Directory.GetCurrentDirectory();
     var files = Directory.GetFiles(currentDir, "*", SearchOption.AllDirectories);
 
-    Console.WriteLine("All files:");
-    foreach (var file in files)
+    var LanguagesConfig = ServiceLanguage.LanguagesConfig;
+    var filteredFiles = new List<string>();
+
+    foreach (var language in languages)
     {
-        Console.WriteLine(file);
+        var (extensions, ignoredFolders) = LanguagesConfig[language.ToLower()];
+        filteredFiles.AddRange(files
+            .Where(file =>
+                extensions.Any(ext => file.EndsWith(ext, StringComparison.OrdinalIgnoreCase)) &&
+                !ignoredFolders.Any(folder => file.Contains(Path.DirectorySeparatorChar + folder + Path.DirectorySeparatorChar))));
     }
 
-    var languagesWithExtensions = ServiceLanguage.languagesWithExtensions;
-
-    var selectedExtensions = languages.Contains("all", StringComparer.OrdinalIgnoreCase)
-        ? languagesWithExtensions.SelectMany(l => l.extensions).ToArray()  // Include all file extensions
-        : languagesWithExtensions
-            .Where(l => languages.Contains(l.language, StringComparer.OrdinalIgnoreCase))
-            .SelectMany(l => l.extensions)
-            .ToArray();
-    Console.WriteLine(  "exes");
-    foreach (var ex in selectedExtensions)
-    {
-        Console.Write(ex+" ");
-    }
-    Console.WriteLine(  );
-    // Filter files by selected extensions
-    var filteredFiles = files.Where(f =>
-    {
-        var excludedDirectories = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        "bin", "debug", "release", "obj", ".git", ".svn", ".vs"
-    };
-        var relativePath = Path.GetRelativePath(Directory.GetCurrentDirectory(), f);
-        var directoryParts = relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-
-        // Check if any part of the path matches an excluded directory
-        if (directoryParts.Any(part => excludedDirectories.Contains(part)))
-            return false;
-
-        // Check if the file has an allowed extension
-        return selectedExtensions.Any(ext => f.EndsWith(ext, StringComparison.OrdinalIgnoreCase)); 
-    
-    });
-    
     Console.WriteLine("All files:");
     foreach (var file in filteredFiles)
     {
@@ -265,14 +238,14 @@ createRspCommand.SetHandler(() =>
     var author = Console.ReadLine();
 
     // generate command line
-    var commandText = $" -l {string.Join(" ", languages)} "+
+    var commandText = $" -l {string.Join(" ", languages)} " +
                       $" {(!string.IsNullOrEmpty(output) ? $"-o {output} " : "")}" +
                       $"{(note ? "-n " : "")}" +
-                      $"{(!string.IsNullOrEmpty(sort) ? $"-s {sort} " : "" )}" +
+                      $"{(!string.IsNullOrEmpty(sort) ? $"-s {sort} " : "")}" +
                       $"{(removeEmptyLines ? "-r " : "")}" +
                       $"{(!string.IsNullOrEmpty(author) ? $"-a \"{author}\" " : "")}";
 
-   
+
     Console.WriteLine("Enter the response file name (only file name, no path):");
     var rspFileName = Console.ReadLine();
     string rspFilePath = Path.Combine(Directory.GetCurrentDirectory(), rspFileName);

@@ -8,34 +8,28 @@ namespace fib
 {
     public class ServiceLanguage
     {
-        public static (string language, string[] extensions)[] languagesWithExtensions =
-            new (string language, string[] extensions)[]
-    {
-        ("py", new string[] { ".py" }),            // Python
-        ("js", new string[] { ".js" }),            // JavaScript
-        ("java", new string[] { ".java" }),        // Java
-        ("tsx",new string []{".tsx"}),
-        ("cs", new string[] { ".cs" }),            // C#
-        ("cpp", new string[] { ".cpp", ".h" }),    // C++
-        ("rb", new string[] { ".rb" }),            // Ruby
-        ("php", new string[] { ".php" }),          // PHP
-        ("go", new string[] { ".go" }),            // Go
-        ("swift", new string[] { ".swift" }),      // Swift
-        ("kt", new string[] { ".kt" }),            // Kotlin
-        ("rs", new string[] { ".rs" }),            // Rust
-        ("ts", new string[] { ".ts" }),            // TypeScript
-        ("html", new string[] { ".html" }),        // HTML
-        ("css", new string[] { ".css" }),          // CSS
-        ("sql", new string[] { ".sql" }),          // SQL
-        ("sh", new string[] { ".sh" }),            // Shell Script
-        ("r", new string[] { ".r" }),              // R
-        ("m", new string[] { ".m" }),              // MATLAB
-        ("pl", new string[] { ".pl" }),            // Perl
-        ("lua", new string[] { ".lua" }),          // Lua
-        ("objc", new string[] { ".m" }),           // Objective-C
-        ("hs", new string[] { ".hs" }),            // Haskell
-        ("fs", new string[] { ".fs" })             // F#
-    };
+
+
+        public static Dictionary<string, (string[] fileExtensions, string[] ignoreFolders)> LanguagesConfig = new Dictionary<string, (string[], string[])>
+        {
+            { "csharp", (new string[] { ".cs" }, new string[] { "bin", "debug" }) },
+            { "python", (new string[] { ".py", ".ipynb" }, new string[] { "__pycache__", ".pytest_cache", ".vscode", "env", "venv", "*.egg-info" }) },
+            { "javascript", (new string[] { ".js", ".jsx" }, new string[] { "node_modules", "dist", ".vscode" }) },
+            { "java", (new string[] { ".java", ".class" }, new string[] { "target", ".vscode", ".idea", "*.iml" }) },
+            { "html", (new string[] { ".html", ".htm" }, new string[] { ".vscode" }) },
+            { "css", (new string[] { ".css", ".scss", ".sass" }, new string[] { ".vscode" }) },
+            { "cpp", (new string[] { ".cpp", ".h", ".hpp", ".c" }, new string[] { "build", ".vscode" }) },
+            { "php", (new string[] { ".php" }, new string[] { "vendor", ".vscode" }) },
+            { "ruby", (new string[] { ".rb" }, new string[] { ".vscode", ".bundle" }) },
+            { "go", (new string[] { ".go" }, new string[] { "bin", "pkg", ".vscode" }) },
+            { "typescript", (new string[] { ".ts", ".tsx" }, new string[] { "node_modules", "dist", ".vscode" }) },
+            { "shell", (new string[] { ".sh" }, new string[] { ".vscode" }) },
+            { "kotlin", (new string[] { ".kt", ".kts" }, new string[] { "build", ".idea", "*.iml" }) },
+            { "swift", (new string[] { ".swift" }, new string[] { ".vscode", "build" }) },
+            { "rust", (new string[] { ".rs" }, new string[] { "target", ".vscode" }) }
+
+        };
+      
 
     }
 }
